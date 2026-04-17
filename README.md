@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Volentra — Smart Resource Allocation Platform
 
 **Data-Driven Volunteer Coordination for Social Impact**
@@ -76,3 +77,6 @@ Use any of the demo accounts to test the different views:
 
 - **Map is blank or grey:** Your network is blocking OpenStreetMap tile servers (`tile.openstreetmap.org`). The application will automatically detect this on the first load and gracefully degrade to a beautiful fallback CSS heatmap. If you still see a grey box, try hard-refreshing (`Ctrl+Shift+R`).
 - **Nodemon / Server Errors:** If you see `MODULE_NOT_FOUND`, ensure you successfully ran the `npm install` command. If normal npm fails with `ETIMEDOUT`, always append `--registry https://registry.npmmirror.com` to the command.
+=======
+# Volentra
+>>>>>>> 27508ce2bfcc5fa9954644d69477b1a815b7c80d
