@@ -3,7 +3,8 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 const AppContext = createContext();
 export const useApp = () => useContext(AppContext);
 
-const API_URL = 'http://localhost:5000/api';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+const API_URL = `${BACKEND_URL}/api`;
 
 export function AppProvider({ children }) {
     // ── Auth ────────────────────────────────────────────────────────────────
