@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:5000/api';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+const API_URL = `${BACKEND_URL}/api`;
 
 const getAuthHeaders = (extraHeaders = {}) => {
     const token = localStorage.getItem('token');

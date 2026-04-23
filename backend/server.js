@@ -4,6 +4,7 @@ const http = require('http');
 const path = require('path');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-volentra-key';
 
@@ -48,33 +49,32 @@ function broadcast(event, data) {
     if (io) io.emit(event, data);
 }
 
-// ── Multer (optional — only if installed) ─────────────────────────────────────
+// ── Multer + Cloudinary Storage ───────────────────────────────────────────────
 let upload = null;
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
 try {
     const multer = require('multer');
-    const storage = multer.diskStorage({
-        destination: (_req, _file, cb) => cb(null, uploadsDir),
-        filename: (_req, file, cb) => {
-            const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-            cb(null, unique + path.extname(file.originalname).toLowerCase());
+    const { v2: cloudinary } = require('cloudinary');
+    const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+    // Configure Cloudinary
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+    });
+
+    const storage = new CloudinaryStorage({
+        cloudinary: cloudinary,
+        params: {
+            folder: 'volentra_uploads',
+            allowed_formats: ['jpeg', 'jpg', 'png', 'gif', 'webp'],
         },
     });
-    upload = multer({
-        storage,
-        limits: { fileSize: 10 * 1024 * 1024 },
-        fileFilter: (_req, file, cb) => {
-            const ok = /jpeg|jpg|png|gif|webp/.test(path.extname(file.originalname).toLowerCase());
-            cb(ok ? null : new Error('Images only'), ok);
-        },
-    });
-    // Serve uploaded files
-    app.use('/uploads', express.static(uploadsDir));
-    console.log('   Multer     : enabled (disk storage)');
-} catch {
-    console.log('   Multer     : not installed (run: npm install multer) — image uploads will use JSON fallback');
+
+    upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
+    console.log('   Multer     : enabled (Cloudinary storage)');
+} catch (error) {
+    console.log('   Multer     : setup failed — image uploads will use JSON fallback', error.message);
 }
 
 // ── In-Memory Database ────────────────────────────────────────────────────────
@@ -213,7 +213,7 @@ function handleCreateReport(req, res) {
         submittedBy: parseInt(body.submittedBy) || 3,
         status: 'Pending',
         createdAt,
-        imageUrl: req.file ? `/uploads/${req.file.filename}` : null,
+        imageUrl: req.file ? req.file.path : null,
         priorityScore: calcPriority(urgency, peopleAffected, createdAt),
     };
     db.reports.unshift(newReport);
