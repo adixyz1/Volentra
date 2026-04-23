@@ -48,11 +48,16 @@ Volentra implements robust role-based authentication using **JSON Web Tokens (JW
 - **Secure Cookies:** Tokens are securely handled via HTTP-only cookies, protecting against XSS attacks while ensuring seamless, persistent login sessions.
 - **Role-Based Access Control (RBAC):** Different access levels (Admin, Volunteer, Field Worker) are strictly enforced by the backend on API routes, ensuring data integrity.
 
+### F. Serverless Cloud Architecture
+The platform is designed to be highly scalable using a split-deployment model:
+- **Cloudinary Image Storage:** Files are not saved locally. Instead, they are streamed directly into Cloudinary, allowing the backend to remain fully serverless and ephemeral.
+- **Vercel & Render Integration:** The decoupled frontend and backend seamlessly communicate across the cloud via dynamic environment variables (`VITE_BACKEND_URL`) and open CORS policies.
+
 ---
 
 ## 3. High-Level Architecture Flow
 
-1. **Submission:** A *Field Worker* or citizen logs in and submits a visual incident report, attaching images (handled dynamically via Multer storage/S3).
+1. **Submission:** A *Field Worker* or citizen logs in and submits a visual incident report, attaching images (handled dynamically via Cloudinary cloud storage).
 2. **Analysis:** The Express API categorizes the report and calculates its Priority Score.
 3. **Broadcast:** The new report is emitted via WebSockets to the Admin Dashboard.
 4. **Action:** The Admin clicks exactly one button to "Find Match." The server calculates proximity arrays and surfaces the Top 5 volunteers.
