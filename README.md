@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Volentra — Smart Resource Allocation Platform
 
 **Data-Driven Volunteer Coordination for Social Impact**
@@ -13,7 +13,7 @@ Designed for hackathons and rapid deployment, it features a polished, modern Saa
 - **🗺️ Interactive Mapping:** Dual-mode map component. Auto-detects network connectivity to display either a real Leaflet + OpenStreetMap or a beautiful CSS-based interactive heatmap fallback.
 - **📱 Responsive UI:** Fully responsive for desktop, tablet, and mobile with a built-in mobile drawer and hamburger menu.
 - **📁 File Handling:** Backend configured with Multer for handling multipart/form-data incident report images.
-- **🔑 Persistent Auth:** Simulated persistent authentication across page reloads using a server-side session validation ping.
+- **🔑 Secure Auth:** Robust JWT (JSON Web Tokens) based authentication with secure cookie management for persistent sessions and role-based access control.
 - **📈 Advanced Analytics:** Embedded Chart.js for data visualization, displaying system statistics and priority breakdown.
 
 ## Tech Stack
@@ -30,6 +30,7 @@ Designed for hackathons and rapid deployment, it features a polished, modern Saa
 - **Real-time:** Socket.io
 - **Storage:** Multer (Local disk storage ready to be swapped for S3)
 - **Database:** In-memory Database (Easy to connect to MongoDB/PostgreSQL)
+- **Authentication:** JWT (JSON Web Tokens) with standard cookie-parser middleware
 
 ## Getting Started
 
@@ -77,6 +78,3 @@ Use any of the demo accounts to test the different views:
 
 - **Map is blank or grey:** Your network is blocking OpenStreetMap tile servers (`tile.openstreetmap.org`). The application will automatically detect this on the first load and gracefully degrade to a beautiful fallback CSS heatmap. If you still see a grey box, try hard-refreshing (`Ctrl+Shift+R`).
 - **Nodemon / Server Errors:** If you see `MODULE_NOT_FOUND`, ensure you successfully ran the `npm install` command. If normal npm fails with `ETIMEDOUT`, always append `--registry https://registry.npmmirror.com` to the command.
-=======
-# Volentra
->>>>>>> 27508ce2bfcc5fa9954644d69477b1a815b7c80d

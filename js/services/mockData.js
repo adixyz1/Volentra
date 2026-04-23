@@ -1,16 +1,16 @@
 const mockUsers = [
-    { id: 1, name: 'Admin Sarah', email: 'admin@ngo.org', password: 'password', role: 'admin' },
+    { id: 1, name: 'Admin Aditya', email: 'admin@ngo.org', password: 'password', role: 'admin' },
     { id: 2, name: 'Volunteer John', email: 'john@vol.org', password: 'password', role: 'volunteer' },
     { id: 3, name: 'Field Worker Mike', email: 'mike@field.org', password: 'password', role: 'field_worker' },
 ];
 
 const issueTypes = ['Medical', 'Food Shortage', 'Infrastructure', 'Shelter', 'Water Supply', 'Logistics'];
 
-const mockVolunteers = Array.from({length: 20}, (_, i) => {
+const mockVolunteers = Array.from({ length: 20 }, (_, i) => {
     return {
         id: i + 100,
-        userId: i === 0 ? 2 : null, 
-        name: `Volunteer ${i+1}`,
+        userId: i === 0 ? 2 : null,
+        name: `Volunteer ${i + 1}`,
         skills: [issueTypes[Math.floor(Math.random() * issueTypes.length)], 'General'],
         latitude: 34.0522 + (Math.random() - 0.5) * 0.5,
         longitude: -118.2437 + (Math.random() - 0.5) * 0.5,
@@ -21,7 +21,7 @@ const mockVolunteers = Array.from({length: 20}, (_, i) => {
     };
 });
 
-const mockReports = Array.from({length: 30}, (_, i) => {
+const mockReports = Array.from({ length: 30 }, (_, i) => {
     const isNew = Math.random() > 0.5;
     return {
         id: i + 500,
@@ -31,8 +31,8 @@ const mockReports = Array.from({length: 30}, (_, i) => {
         peopleAffected: Math.floor(Math.random() * 500) + 10,
         latitude: 34.0522 + (Math.random() - 0.5) * 0.4,
         longitude: -118.2437 + (Math.random() - 0.5) * 0.4,
-        priorityScore: 0, 
-        submittedBy: 3, 
+        priorityScore: 0,
+        submittedBy: 3,
         ngoId: 1,
         status: isNew ? 'Pending' : (Math.random() > 0.5 ? 'Assigned' : 'Completed'),
         createdAt: new Date(Date.now() - Math.random() * 100000000).toISOString()

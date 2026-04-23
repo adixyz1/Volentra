@@ -40,7 +40,7 @@ export default function Landing() {
         { num: '04', title: 'Resolve', desc: 'Volunteers accept tasks, complete assignments, and impact metrics are tracked in real-time.' },
     ];
     const testimonials = [
-        { name: 'Sarah Chen', role: 'Director, HopeAid Foundation', text: 'Volentra reduced our volunteer deployment time by 60%. The priority scoring is a game-changer for our disaster response.', avatar: 'SC' },
+        { name: 'Aditya Chen', role: 'Director, HopeAid Foundation', text: 'Volentra reduced our volunteer deployment time by 60%. The priority scoring is a game-changer for our disaster response.', avatar: 'SC' },
         { name: 'Marcus Rivera', role: 'Program Manager, CityReach', text: 'The analytics dashboard gives us insights we never had before. We can now predict community needs before they become crises.', avatar: 'MR' },
         { name: 'Dr. Aisha Patel', role: 'CEO, GlobalVolunteer Network', text: 'The matching engine consistently assigns the best-fit volunteers. Our task completion rate improved from 72% to 94%.', avatar: 'AP' },
     ];

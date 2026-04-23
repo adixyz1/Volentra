@@ -3,6 +3,21 @@ const cors = require('cors');
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-volentra-key';
+
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'Access token missing' });
+
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ error: 'Invalid or expired token' });
+        req.user = user;
+        next();
+    });
+}
 
 // ── Express + HTTP Server ─────────────────────────────────────────────────────
 const app = express();
@@ -65,7 +80,7 @@ try {
 // ── In-Memory Database ────────────────────────────────────────────────────────
 let db = {
     users: [
-        { id: 1, name: 'Admin Sarah', email: 'admin@ngo.org', password: 'password', role: 'admin' },
+        { id: 1, name: 'Admin Aditya', email: 'admin@ngo.org', password: 'password', role: 'admin' },
         { id: 2, name: 'Volunteer John', email: 'john@vol.org', password: 'password', role: 'volunteer' },
         { id: 3, name: 'Field Worker Mike', email: 'mike@field.org', password: 'password', role: 'field_worker' },
     ],
@@ -143,13 +158,15 @@ app.post('/api/auth/login', (req, res) => {
     const { email, password } = req.body;
     const user = db.users.find(u => u.email === email && u.password === password);
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+    
     const { password: _pw, ...safe } = user;
-    res.json(safe);
+    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
+    
+    res.json({ token, user: safe });
 });
 
-app.post('/api/auth/me', (req, res) => {
-    const { id } = req.body;
-    const user = db.users.find(u => u.id === parseInt(id));
+app.post('/api/auth/me', authenticateToken, (req, res) => {
+    const user = db.users.find(u => u.id === req.user.id);
     if (!user) return res.status(401).json({ error: 'Session invalid' });
     const { password: _pw, ...safe } = user;
     res.json(safe);
@@ -169,7 +186,7 @@ app.get('/api/volunteers', (_req, res) => res.json(db.volunteers));
 app.get('/api/ngos', (_req, res) => res.json(db.ngos));
 
 // Submit report — supports multipart (with Multer) OR JSON (fallback)
-app.post('/api/reports', (req, res, next) => {
+app.post('/api/reports', authenticateToken, (req, res, next) => {
     if (upload) {
         upload.single('image')(req, res, (err) => {
             if (err) return res.status(400).json({ error: err.message });
@@ -204,7 +221,7 @@ function handleCreateReport(req, res) {
     res.json(newReport);
 }
 
-app.post('/api/tasks', (req, res) => {
+app.post('/api/tasks', authenticateToken, (req, res) => {
     const { reportId, volunteerId } = req.body;
     db.reports = db.reports.map(r => r.id === parseInt(reportId) ? { ...r, status: 'Assigned' } : r);
     const task = {
@@ -218,7 +235,7 @@ app.post('/api/tasks', (req, res) => {
     res.json(task);
 });
 
-app.patch('/api/tasks/:id', (req, res) => {
+app.patch('/api/tasks/:id', authenticateToken, (req, res) => {
     const taskId = parseInt(req.params.id);
     const { status } = req.body;
     const task = db.tasks.find(t => t.id === taskId);

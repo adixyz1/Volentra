@@ -141,7 +141,7 @@ export function Navbar() {
                                 {[
                                     { t: 'New Urgent Report', d: 'Report #522 submitted · 2m ago', c: 'var(--color-danger)', bg: 'var(--color-danger-light)' },
                                     { t: 'Task Completed', d: 'Task #1003 finished by John · 1h ago', c: 'var(--color-secondary)', bg: 'var(--color-secondary-light)' },
-                                    { t: 'Volunteer Joined', d: 'Sarah accepted Task #512 · 3h ago', c: 'var(--color-info)', bg: 'var(--color-info-light)' },
+                                    { t: 'Volunteer Joined', d: 'Aditya accepted Task #512 · 3h ago', c: 'var(--color-info)', bg: 'var(--color-info-light)' },
                                 ].map((n, i) => (
                                     <div key={i} className="flex gap-3 items-start" style={{ padding: '0.875rem 1rem', borderBottom: '1px solid var(--color-border-light)', cursor: 'pointer', transition: 'background 0.15s' }}
                                         onMouseEnter={e => e.currentTarget.style.background = 'var(--color-bg)'}

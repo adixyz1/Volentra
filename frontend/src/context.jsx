@@ -12,21 +12,30 @@ export function AppProvider({ children }) {
 
     // On mount: read saved user from localStorage and validate with server
     useEffect(() => {
-        const stored = localStorage.getItem('user');
-        if (!stored) { setAuthLoading(false); return; }
+        const storedUser = localStorage.getItem('user');
+        const token = localStorage.getItem('token');
+        if (!storedUser || !token) { 
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            setAuthLoading(false); 
+            return; 
+        }
         try {
-            const u = JSON.parse(stored);
+            const u = JSON.parse(storedUser);
             // Ping server to verify session is still valid
             fetch(`${API_URL}/auth/me`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: u.id }),
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
             })
                 .then(res => {
                     if (res.ok) {
                         setUser(u); // server confirmed — keep user logged in
                     } else {
                         localStorage.removeItem('user'); // server rejected — clear stale state
+                        localStorage.removeItem('token');
                     }
                 })
                 .catch(() => {
@@ -36,6 +45,7 @@ export function AppProvider({ children }) {
                 .finally(() => setAuthLoading(false));
         } catch {
             localStorage.removeItem('user');
+            localStorage.removeItem('token');
             setAuthLoading(false);
         }
     }, []);
@@ -47,15 +57,19 @@ export function AppProvider({ children }) {
             body: JSON.stringify({ email, password: pass }),
         });
         if (!res.ok) throw new Error('Login failed');
-        const u = await res.json();
-        setUser(u);
-        localStorage.setItem('user', JSON.stringify(u));
-        return u;
+        
+        const data = await res.json(); // { token, user }
+        setUser(data.user);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('token', data.token);
+        
+        return data.user;
     };
 
     const logout = useCallback(() => {
         setUser(null);
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
     }, []);
 
     // ── Theme ────────────────────────────────────────────────────────────────

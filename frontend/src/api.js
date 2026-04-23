@@ -1,5 +1,13 @@
 const API_URL = 'http://localhost:5000/api';
 
+const getAuthHeaders = (extraHeaders = {}) => {
+    const token = localStorage.getItem('token');
+    return {
+        ...extraHeaders,
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
+};
+
 export const api = {
     async login(email, password) {
         const res = await fetch(`${API_URL}/auth/login`, {
@@ -28,7 +36,7 @@ export const api = {
         const res = await fetch(`${API_URL}/reports`, {
             method: 'POST',
             // Don't set Content-Type for FormData — browser sets it with the boundary
-            headers: isFormData ? {} : { 'Content-Type': 'application/json' },
+            headers: getAuthHeaders(isFormData ? {} : { 'Content-Type': 'application/json' }),
             body: isFormData ? data : JSON.stringify(data),
         });
         if (!res.ok) throw new Error('Failed to submit report');
@@ -38,7 +46,7 @@ export const api = {
     async assignTask(reportId, volunteerId) {
         const res = await fetch(`${API_URL}/tasks`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify({ reportId, volunteerId }),
         });
         return res.json();
@@ -47,7 +55,7 @@ export const api = {
     async updateTaskStatus(taskId, status) {
         const res = await fetch(`${API_URL}/tasks/${taskId}`, {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify({ status }),
         });
         return res.json();
