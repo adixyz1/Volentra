@@ -262,5 +262,5 @@ app.get('/api/reports/:id/match', (req, res) => {
 // ── Start ─────────────────────────────────────────────────────────────────────
 httpServer.listen(port, () => {
     console.log(`\n✅ Volentra Backend running on http://localhost:${port}`);
-    console.log(`   Uploads    : ${uploadsDir}\n`);
+    console.log(`   Uploads    : Cloudinary\n`);
 });
