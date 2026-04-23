@@ -26,7 +26,7 @@ const httpServer = http.createServer(app);
 const port = process.env.PORT || 5000;
 
 // ── Middleware ────────────────────────────────────────────────────────────────
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'] }));
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 // ── Socket.io (optional — only if installed) ──────────────────────────────────
@@ -34,7 +34,7 @@ let io = null;
 try {
     const { Server } = require('socket.io');
     io = new Server(httpServer, {
-        cors: { origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'], methods: ['GET', 'POST', 'PATCH'] },
+        cors: { origin: '*', methods: ['GET', 'POST', 'PATCH'] },
     });
     io.on('connection', (socket) => {
         console.log(`[Socket.io] Client connected: ${socket.id}`);
