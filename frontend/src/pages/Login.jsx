@@ -19,7 +19,7 @@ export default function Login() {
             else if (user.role === 'volunteer') navigate('/volunteer');
             else if (user.role === 'field_worker') navigate('/fieldworker');
         } catch (err) {
-            showToast("Invalid credentials", 'error');
+            showToast(err.message === 'Failed to fetch' ? "Network error: Check VITE_BACKEND_URL in Vercel" : "Invalid credentials", 'error');
         } finally { setLoading(false); }
     };
 
