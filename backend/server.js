@@ -140,6 +140,10 @@ function initSeed() {
             latitude: 34.0522 + (Math.random() - 0.5) * 0.4,
             longitude: -118.2437 + (Math.random() - 0.5) * 0.4,
             submittedBy: 3, status, createdAt, imageUrl: null,
+            aiAnalysis: {
+                recommendedAction: `Dispatch ${issueTypes[i % issueTypes.length].toLowerCase()} response team to sector ${i + 1} immediately.`,
+                requiredSupplies: ['Emergency Kits', 'Water', 'Radios']
+            }
         };
         r.priorityScore = calcPriority(r.urgency, r.peopleAffected, r.createdAt);
         return r;
