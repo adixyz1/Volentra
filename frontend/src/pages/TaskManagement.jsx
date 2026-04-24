@@ -29,13 +29,13 @@ export default function TaskManagement() {
             return reports.filter(r => r.status === 'Pending').map(r => ({
                 id: `r-${r.id}`, reportId: r.id, title: r.issueType, status: 'Unassigned',
                 priority: r.priorityScore, desc: r.description,
-                tags: [r.issueType], deadline: null
+                tags: [r.issueType], deadline: null, aiAnalysis: r.aiAnalysis
             }));
         }
         if (colId === 'Assigned') {
             return tasks.filter(t => t.status === 'In Progress' && !t.completedAt).slice(0, Math.ceil(tasks.filter(t => t.status === 'In Progress').length / 2)).map(t => {
                 const r = reports.find(rep => rep.id === t.reportId) || {};
-                return { id: `t-${t.id}`, taskId: t.id, reportId: t.reportId, title: r.issueType || 'Task', status: 'Assigned', priority: r.priorityScore || 50, desc: r.description || '', volunteer: vols.find(v => v.id === t.assignedVolunteerId)?.name || 'Unknown', tags: [r.issueType || 'General'], deadline: new Date(new Date(t.assignedAt).getTime() + 172800000).toLocaleDateString() };
+                return { id: `t-${t.id}`, taskId: t.id, reportId: t.reportId, title: r.issueType || 'Task', status: 'Assigned', priority: r.priorityScore || 50, desc: r.description || '', volunteer: vols.find(v => v.id === t.assignedVolunteerId)?.name || 'Unknown', tags: [r.issueType || 'General'], deadline: new Date(new Date(t.assignedAt).getTime() + 172800000).toLocaleDateString(), aiAnalysis: r.aiAnalysis };
             });
         }
         const statusMap = { 'In Progress': 'In Progress', 'Completed': 'Completed' };
@@ -44,7 +44,7 @@ export default function TaskManagement() {
             : tasks.filter(t => t.status === statusMap[colId]);
         return filtered.map(t => {
             const r = reports.find(rep => rep.id === t.reportId) || {};
-            return { id: `t-${t.id}`, taskId: t.id, reportId: t.reportId, title: r.issueType || 'Task', status: colId, priority: r.priorityScore || 50, desc: r.description || '', volunteer: vols.find(v => v.id === t.assignedVolunteerId)?.name || 'Unknown', tags: [r.issueType || 'General'], deadline: t.completedAt ? new Date(t.completedAt).toLocaleDateString() : null };
+            return { id: `t-${t.id}`, taskId: t.id, reportId: t.reportId, title: r.issueType || 'Task', status: colId, priority: r.priorityScore || 50, desc: r.description || '', volunteer: vols.find(v => v.id === t.assignedVolunteerId)?.name || 'Unknown', tags: [r.issueType || 'General'], deadline: t.completedAt ? new Date(t.completedAt).toLocaleDateString() : null, aiAnalysis: r.aiAnalysis };
         });
     };
 
@@ -137,6 +137,22 @@ export default function TaskManagement() {
                                 <label className="form-label">Full Description</label>
                                 <p style={{fontSize: '0.875rem', color: 'var(--color-text-muted)', lineHeight: 1.6}}>{selectedTask.desc}</p>
                             </div>
+
+                            {selectedTask.aiAnalysis && !selectedTask.aiAnalysis.error && (
+                                <div style={{background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(124, 58, 237, 0.05))', border: '1px solid rgba(79, 70, 229, 0.2)', borderRadius: 'var(--radius-lg)', padding: '1rem', marginBottom: '1.25rem'}}>
+                                    <div className="flex items-center gap-2" style={{marginBottom: '0.5rem'}}>
+                                        <i className="fas fa-sparkles" style={{color: 'var(--color-primary)'}}></i>
+                                        <span style={{fontWeight: 700, fontSize: '0.85rem', color: 'var(--color-primary)'}}>Google Gemini Triage Analysis</span>
+                                    </div>
+                                    <p style={{fontSize: '0.85rem', marginBottom: '0.5rem'}}><strong>Recommended Action:</strong> {selectedTask.aiAnalysis.recommendedAction}</p>
+                                    <div className="flex flex-wrap gap-1">
+                                        <span style={{fontSize: '0.75rem', fontWeight: 600}}>Required Supplies: </span>
+                                        {selectedTask.aiAnalysis.requiredSupplies.map((sup, i) => (
+                                            <span key={i} style={{fontSize: '0.7rem', background: 'var(--color-surface)', padding: '0.1rem 0.4rem', borderRadius: '4px', border: '1px solid var(--color-border)'}}>{sup}</span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {selectedTask.volunteer && (
                                 <div className="form-group">

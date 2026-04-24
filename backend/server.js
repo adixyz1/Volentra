@@ -6,6 +6,9 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+const { GoogleGenAI } = require('@google/genai');
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'dummy-key' });
+
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-volentra-key';
 
 function authenticateToken(req, res, next) {
@@ -197,11 +200,40 @@ app.post('/api/reports', authenticateToken, (req, res, next) => {
     }
 });
 
-function handleCreateReport(req, res) {
+async function handleCreateReport(req, res) {
     const body = req.body;
     const createdAt = new Date().toISOString();
     const urgency = parseInt(body.urgency) || 5;
     const peopleAffected = parseInt(body.peopleAffected) || 10;
+    
+    // Gemini AI Predictive Triage
+    let aiAnalysis = null;
+    if (process.env.GEMINI_API_KEY) {
+        try {
+            const prompt = `Analyze this disaster incident report.
+Issue Type: ${body.issueType || 'General'}
+Description: ${body.description || ''}
+Urgency Level: ${urgency}/10
+People Affected: ${peopleAffected}
+
+Return ONLY a strictly valid JSON object (without markdown blocks) with this exact schema:
+{
+  "aiUrgencyScore": <number 1-100 based on text severity>,
+  "recommendedAction": "<string 1 short sentence on what volunteers should do immediately>",
+  "requiredSupplies": ["<string>", "<string>"]
+}`;
+            const response = await ai.models.generateContent({
+                model: 'gemini-1.5-flash',
+                contents: prompt,
+            });
+            const text = response.text.replace(/```json/g, '').replace(/```/g, '').trim();
+            aiAnalysis = JSON.parse(text);
+        } catch (error) {
+            console.error('Gemini AI Error:', error.message);
+            aiAnalysis = { error: 'AI analysis unavailable', recommendedAction: 'Assess manually', requiredSupplies: [] };
+        }
+    }
+
     const newReport = {
         id: Math.floor(Math.random() * 90_000) + 10_000,
         issueType: body.issueType || 'General',
@@ -215,6 +247,7 @@ function handleCreateReport(req, res) {
         createdAt,
         imageUrl: req.file ? req.file.path : null,
         priorityScore: calcPriority(urgency, peopleAffected, createdAt),
+        aiAnalysis
     };
     db.reports.unshift(newReport);
     broadcast('report:new', newReport);

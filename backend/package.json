@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@google/genai": "^1.50.1",
     "basic-auth": "^2.0.1",
     "cloudinary": "^1.41.3",
     "cors": "^2.8.6",
