@@ -223,7 +223,7 @@ Return ONLY a strictly valid JSON object (without markdown blocks) with this exa
   "requiredSupplies": ["<string>", "<string>"]
 }`;
             const response = await ai.models.generateContent({
-                model: 'gemini-1.5-flash',
+                model: 'gemini-2.5-flash',
                 contents: prompt,
             });
             const text = response.text.replace(/```json/g, '').replace(/```/g, '').trim();
