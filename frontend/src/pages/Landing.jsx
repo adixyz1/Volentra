@@ -77,7 +77,7 @@ export default function Landing() {
                         <button className="btn btn-primary btn-lg" style={{ animation: 'pulse-glow 2s infinite' }} onClick={() => navigate('/register')}>
                             Get Started Free <i className="fas fa-arrow-right"></i>
                         </button>
-                        <button className="btn btn-outline btn-lg" style={{ background: 'white' }} onClick={() => window.open('https://youtu.be/KjAcafNziDo', '_blank')}>
+                        <button className="btn btn-outline btn-lg" style={{ background: 'white' }} onClick={() => window.open('https://youtu.be/TRakgNzc9pA', '_blank')}>
                             <i className="fas fa-play-circle"></i> Watch Demo
                         </button>
                     </div>
